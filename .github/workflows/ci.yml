@@ -51,3 +51,14 @@ jobs:
           cd backend
           pytest tests/test_api.py -v
   
+         build-docker:
+    needs: test-backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t logmein-backend ./backend
+
