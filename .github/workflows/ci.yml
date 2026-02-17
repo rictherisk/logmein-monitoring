@@ -17,6 +17,11 @@ jobs:
           POSTGRES_PASSWORD: logs_password
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U logs_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - uses: actions/checkout@v4
@@ -25,11 +30,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: |
+      - name: Install & Run tests
+        run: |
           cd backend
           pip install -r requirements.txt
           pip install pytest
           pytest tests/test_api.py -v
+        env:
+          DB_HOST: postgres
+          DB_NAME: logs_db
+          DB_USER: logs_user
+          DB_PASSWORD: logs_password
+          DB_PORT: 5432
 
   build-docker:
     needs: test-backend
@@ -37,4 +49,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t logmein-backend ./backend
+
+      - name: Build Docker image
+        run: docker build -t logmein-backend ./backend
