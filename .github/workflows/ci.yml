@@ -1,0 +1,53 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: logs_db
+          POSTGRES_USER: logs_user
+          POSTGRES_PASSWORD: logs_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U logs_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        env:
+          DB_HOST: localhost
+          DB_NAME: logs_db
+          DB_USER: logs_user
+          DB_PASSWORD: logs_password
+          DB_PORT: 5432
+        run: |
+          cd backend
+          pytest tests/test_api.py -v
+  
