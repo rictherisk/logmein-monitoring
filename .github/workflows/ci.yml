@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      db:
         image: postgres:15
         env:
           POSTGRES_DB: logs_db
@@ -37,7 +37,7 @@ jobs:
           pip install pytest
           pytest tests/test_api.py -v
         env:
-          DB_HOST: postgres
+          DB_HOST: db
           DB_NAME: logs_db
           DB_USER: logs_user
           DB_PASSWORD: logs_password
