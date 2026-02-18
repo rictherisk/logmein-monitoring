@@ -70,7 +70,7 @@ def health():
         cursor.execute('SELECT 1')
         cursor.close()
         conn.close()
-        return jsonify({'status': 'ok', 'database': 'connected', 'timestamp': datetime.now().isoformat()})
+        return jsonify({'status': 'okV2', 'database': 'connected', 'timestamp': datetime.now().isoformat()})
     except Exception as e:
         return jsonify({'status': 'error', 'database': 'disconnected', 'error': str(e)}), 500
 
